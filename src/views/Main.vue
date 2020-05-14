@@ -1,6 +1,8 @@
 <template>
-<div class ="contain">
-  <div class="game-log-message-box">
+<div class ="container">
+  <div class="row">
+    <div class="game-log-message-box col-3 d-flex justify-content-center align-items-center">
+      <div class="chatbox">
         <h3>Enter chat message</h3>
         <form @submit.prevent="sendMessage">
             <label for="chat-message"></label>
@@ -9,26 +11,20 @@
             </textarea><br>
             <button type="submit" class="submit-button">Submit!</button>
         </form>
+      </div>
   </div>
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
-  <div class="drawer">
-
-    <header>
+  <div class="drawer col-3">
+    <header style="margin-bottom: 100px;">
       <p class="message">Tic Tac Toe</p>
-      <button class="play-btn">play</button>
+      <button class="play-btn" @click.prevent="play">play</button>
     </header>
 
-    <main class="board">
-      <div class="cell circle"></div>
-      <div class="cell cross"></div>
-      <div class="cell circle"></div>
-      <div class="cell cross"></div>
-      <div class="cell circle"></div>
-      <div class="cell"></div>
-      <div class="cell cross"></div>
-      <div class="cell cross"></div>
-      <div class="cell"></div>
+    <main class="board mt-5">
+      <div v-for="(board, index) in boards" :key="index">
+        <div :class="board" class="cell" @click.prevent="addMove(index)"></div>
+      </div>
     </main>
 
     <footer class="scores hide">
@@ -53,10 +49,10 @@
 
     </footer>
   </div>
-  <div class="game-log-message-box">
-      <p>{{winner}}</p>
-      <p>{{msg}}</p>
-      <div id="separatorLine"></div>
+  <div class="game-log-message-box col-3">
+    <p>{{winner}}</p>
+    <p>{{msg}}</p>
+    <div id="separatorLine"></div>
       <div style="  display:flex; flex-direction: column-reverse;">
         <div class="game-log-chat-messages">
           <div v-for="message in chatMessages" :key="message.name">
@@ -66,11 +62,12 @@
         </div>
       </div>
     </div>
+  </div>
 </div>
 </template>
 
 <script>
-import io from 'socket.io-client'
+import socket from '../config/socket.js'
 
 export default {
   name: 'chatBox',
@@ -79,26 +76,63 @@ export default {
       winner: '',
       message: '',
       msg: '',
-      chatMessages: []
+      chatMessages: [],
+      name: localStorage.getItem('name'),
+      boards: [],
+      users: [],
+      roomNo: ''
     }
   },
   methods: {
     sendMessage () {
       console.log('chat message submitted')
       const messageData = {
-        name: localStorage.name,
+        name: this.name,
         message: this.message
       }
-      var socket = io.connect('http://localhost:3000')
       socket.emit('send-message', messageData)
       this.message = ''
+    },
+    addMove (index) {
+      const payload = {
+        name: this.name,
+        index: index,
+        roomNo: this.roomNo
+      }
+      socket.emit('add-move', payload)
+    },
+    play () {
+      const payload = {
+        roomNo: this.roomNo
+      }
+      socket.emit('play-game', payload)
     }
   },
   created () {
-    io.connect('http://localhost:3000').on('send-message', (data) => {
-      console.log('kumpulan chat message diterima')
-      this.chatMessages = data
-    })
+    if (localStorage.getItem('name')) {
+      socket.on('send-message', (data) => {
+        console.log('kumpulan chat message diterima')
+        this.chatMessages = data
+      })
+      // init game
+      socket.on('play-game', (data) => {
+        this.boards = data
+      })
+      // add move
+      socket.on('add-move', (data) => {
+        if (data.winner) {
+          this.winner = data.winner
+        }
+        this.boards = data.moves
+      })
+      socket.on('user-connect', (data) => {
+        // console.log(data)
+        this.roomNo = data.roomNo
+        this.users = data.users
+      })
+    } else {
+      this.$router.push('/')
+    }
     // io.on('connected', function (username) {
     //   this.msg = 'User ' + username + '  has joined'
     // })
@@ -129,7 +163,7 @@ export default {
   border-radius: 4px;
 }
 .game-log-message-box{
-  height: 80%;
+  height: 50vh;
   background-color: width;
   width: 80%;
   text-align: left;
