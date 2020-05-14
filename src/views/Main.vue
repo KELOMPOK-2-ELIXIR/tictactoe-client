@@ -12,7 +12,7 @@
   </div>
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
-<div class="drawer">
+  <div class="drawer">
 
     <header>
       <p class="message">Tic Tac Toe</p>
@@ -76,7 +76,10 @@ export default {
   name: 'chatBox',
   data () {
     return {
-      message: ''
+      winner: '',
+      message: '',
+      msg: '',
+      chatMessages: []
     }
   },
   methods: {
@@ -90,6 +93,15 @@ export default {
       socket.emit('send-message', messageData)
       this.message = ''
     }
+  },
+  created () {
+    io.connect('http://localhost:3000').on('send-message', (data) => {
+      console.log('kumpulan chat message diterima')
+      this.chatMessages = data
+    })
+    // io.on('connected', function (username) {
+    //   this.msg = 'User ' + username + '  has joined'
+    // })
   }
 }
 </script>
