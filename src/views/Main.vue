@@ -20,15 +20,42 @@
     </header>
 
     <main class="board">
-      <div class="cell circle"></div>
-      <div class="cell cross"></div>
-      <div class="cell circle"></div>
-      <div class="cell cross"></div>
-      <div class="cell circle"></div>
-      <div class="cell"></div>
-      <div class="cell cross"></div>
-      <div class="cell cross"></div>
-      <div class="cell"></div>
+
+      <div v-if ="(row1 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row1 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(1)"></div>
+
+      <div v-if ="(row2 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row2 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(2)"></div>
+
+      <div v-if ="(row3 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row3 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(3)"></div>
+
+      <div v-if ="(row4 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row4 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(4)"></div>
+
+      <div v-if ="(row5 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row5 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(5)"></div>
+
+      <div v-if ="(row6 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row6 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(6)"></div>
+
+      <div v-if ="(row7 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row7 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(7)"></div>
+
+      <div v-if ="(row8 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row8 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(8)"></div>
+
+      <div v-if ="(row9 === 'A')" class="cell circle"></div>
+      <div v-else-if="(row9 === 'B')" class="cell cross"></div>
+      <div v-else class="cell" @click="choose(9)"></div>
     </main>
 
     <footer class="scores hide">
@@ -57,7 +84,7 @@
       <p>{{winner}}</p>
       <p>{{msg}}</p>
       <div id="separatorLine"></div>
-      <div style="  display:flex; flex-direction: column-reverse;">
+      <div style="display:flex; flex-direction: column-reverse;">
         <div class="game-log-chat-messages">
           <div v-for="message in chatMessages" :key="message.name">
             <p><b>{{message.name}}</b></p>
@@ -71,7 +98,8 @@
 
 <script>
 import io from 'socket.io-client'
-
+import axios from 'axios'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'chatBox',
   data () {
@@ -79,10 +107,24 @@ export default {
       winner: '',
       message: '',
       msg: '',
-      chatMessages: []
+      chatMessages: [],
+      row1: '',
+      row2: '',
+      row3: '',
+      row4: '',
+      row5: '',
+      row6: '',
+      row7: '',
+      row8: '',
+      row9: '',
+      userpick: ''
     }
   },
+  computed: {
+    ...mapState(['userrun', 'position1', 'position2', 'position3', 'position4', 'position5', 'position6', 'position7', 'position8', 'position9'])
+  },
   methods: {
+    ...mapActions(['fetchposition']),
     sendMessage () {
       console.log('chat message submitted')
       const messageData = {
@@ -92,13 +134,47 @@ export default {
       var socket = io.connect('http://localhost:3000')
       socket.emit('send-message', messageData)
       this.message = ''
+    },
+    choose (pick) {
+      axios({
+        method: 'POST',
+        url: 'http://localhost:3000/data',
+        headers: {
+          room: localStorage.room,
+          username: localStorage.username
+        },
+        data: {
+          chose: pick
+        }
+      })
+        .then(result => {
+          this.fetchposition()
+        })
     }
   },
   created () {
+    this.fetchposition()
+    this.row1 = this.position1
+    this.row2 = this.position2
+    this.row3 = this.position3
+    this.row4 = this.position4
+    this.row5 = this.position5
+    this.row6 = this.position6
+    this.row7 = this.position7
+    this.row8 = this.position8
+    this.row9 = this.position9
+    if (this.userrun % 2 === 0) {
+      console.log('GILIRAN PEMAIN GANJIL')
+    } else {
+      console.log('GILIRAN PEMAIN GENAP')
+    }
+    console.log('data dari main', this.position1, this.position2)
+
     io.connect('http://localhost:3000').on('send-message', (data) => {
       console.log('kumpulan chat message diterima')
       this.chatMessages = data
     })
+
     // io.on('connected', function (username) {
     //   this.msg = 'User ' + username + '  has joined'
     // })
