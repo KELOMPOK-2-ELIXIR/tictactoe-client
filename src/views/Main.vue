@@ -98,6 +98,7 @@
 
 <script>
 import io from 'socket.io-client'
+import axios from 'axios'
 import { mapState, mapActions } from 'vuex'
 export default {
   name: 'chatBox',
@@ -115,12 +116,12 @@ export default {
       row6: '',
       row7: '',
       row8: '',
-      row9: ''
-
+      row9: '',
+      userpick: ''
     }
   },
   computed: {
-    ...mapState(['position1', 'position2', 'position3', 'position4', 'position5', 'position6', 'position7', 'position8', 'position9'])
+    ...mapState(['userrun', 'position1', 'position2', 'position3', 'position4', 'position5', 'position6', 'position7', 'position8', 'position9'])
   },
   methods: {
     ...mapActions(['fetchposition']),
@@ -135,7 +136,20 @@ export default {
       this.message = ''
     },
     choose (pick) {
-      console.log(pick)
+      axios({
+        method: 'POST',
+        url: 'http://localhost:3000/data',
+        headers: {
+          room: localStorage.room,
+          username: localStorage.username
+        },
+        data: {
+          chose: pick
+        }
+      })
+        .then(result => {
+          this.fetchposition()
+        })
     }
   },
   created () {
@@ -149,6 +163,11 @@ export default {
     this.row7 = this.position7
     this.row8 = this.position8
     this.row9 = this.position9
+    if (this.userrun % 2 === 0) {
+      console.log('GILIRAN PEMAIN GANJIL')
+    } else {
+      console.log('GILIRAN PEMAIN GENAP')
+    }
     console.log('data dari main', this.position1, this.position2)
 
     io.connect('http://localhost:3000').on('send-message', (data) => {
