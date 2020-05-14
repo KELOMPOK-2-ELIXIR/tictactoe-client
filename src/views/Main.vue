@@ -21,40 +21,40 @@
 
     <main class="board">
 
-      <div v-if ="(row1 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row1 === 'B')" class="cell cross"></div>
+      <div v-if ="position1 === 'A'" class="cell circle"></div>
+      <div v-else-if="position1 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(1)"></div>
 
-      <div v-if ="(row2 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row2 === 'B')" class="cell cross"></div>
+      <div v-if ="position2 === 'A'" class="cell circle"></div>
+      <div v-else-if="position2 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(2)"></div>
 
-      <div v-if ="(row3 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row3 === 'B')" class="cell cross"></div>
+      <div v-if ="position3 === 'A'" class="cell circle"></div>
+      <div v-else-if="position3 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(3)"></div>
 
-      <div v-if ="(row4 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row4 === 'B')" class="cell cross"></div>
+     <div v-if ="position4 === 'A'" class="cell circle"></div>
+      <div v-else-if="position4 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(4)"></div>
 
-      <div v-if ="(row5 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row5 === 'B')" class="cell cross"></div>
+     <div v-if ="position5 === 'A'" class="cell circle"></div>
+      <div v-else-if="position5 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(5)"></div>
 
-      <div v-if ="(row6 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row6 === 'B')" class="cell cross"></div>
+      <div v-if ="position6 === 'A'" class="cell circle"></div>
+      <div v-else-if="position6 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(6)"></div>
 
-      <div v-if ="(row7 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row7 === 'B')" class="cell cross"></div>
+      <div v-if ="position7 === 'A'" class="cell circle"></div>
+      <div v-else-if="position7 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(7)"></div>
 
-      <div v-if ="(row8 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row8 === 'B')" class="cell cross"></div>
+      <div v-if ="position8 === 'A'" class="cell circle"></div>
+      <div v-else-if="position8 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(8)"></div>
 
-      <div v-if ="(row9 === 'A')" class="cell circle"></div>
-      <div v-else-if="(row9 === 'B')" class="cell cross"></div>
+      <div v-if ="position9 === 'A'" class="cell circle"></div>
+      <div v-else-if="position9 === 'B'" class="cell cross"></div>
       <div v-else class="cell" @click="choose(9)"></div>
     </main>
 
@@ -108,16 +108,8 @@ export default {
       message: '',
       msg: '',
       chatMessages: [],
-      row1: '',
-      row2: '',
-      row3: '',
-      row4: '',
-      row5: '',
-      row6: '',
-      row7: '',
-      row8: '',
-      row9: '',
-      userpick: ''
+      userpick: '',
+      islogin: false
     }
   },
   computed: {
@@ -154,15 +146,6 @@ export default {
   },
   created () {
     this.fetchposition()
-    this.row1 = this.position1
-    this.row2 = this.position2
-    this.row3 = this.position3
-    this.row4 = this.position4
-    this.row5 = this.position5
-    this.row6 = this.position6
-    this.row7 = this.position7
-    this.row8 = this.position8
-    this.row9 = this.position9
     if (this.userrun % 2 === 0) {
       console.log('GILIRAN PEMAIN GANJIL')
     } else {
@@ -174,6 +157,13 @@ export default {
       console.log('kumpulan chat message diterima')
       this.chatMessages = data
     })
+
+    if (localStorage.username) {
+      this.islogin = true
+    } else {
+      this.islogin = false
+      this.$router.push('/')
+    }
 
     // io.on('connected', function (username) {
     //   this.msg = 'User ' + username + '  has joined'
@@ -347,7 +337,7 @@ body {
 .play-btn {
 
   position:absolute;
-  top:100px;
+  top:10px;
   left:50%;
   outline:none;
   border:none;

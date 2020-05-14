@@ -28,7 +28,8 @@ export default {
   data () {
     return {
       username: '',
-      room: ''
+      room: '',
+      islogin: false
     }
   },
   methods: {
@@ -50,6 +51,14 @@ export default {
         //     message: 'Username/Password not Found'
         //   })
         })
+    }
+  },
+  created () {
+    if (localStorage.username) {
+      this.islogin = true
+      this.$router.push('main')
+    } else {
+      this.islogin = false
     }
   }
 }
