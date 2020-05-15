@@ -3,12 +3,12 @@
         {
             "username":"igun",
             "room":1,
-            "row":[1,5,3,9]
+            "row":[1,2,5,9]
         },
         {
             "username":"yosa",
             "room":1,
-            "row":[4,2,7]
+            "row":[4,3,7,6]
         }
     ]           
 }

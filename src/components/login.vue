@@ -36,20 +36,19 @@ export default {
     login () {
       axios({
         method: 'POST',
-        url: 'http:/localhost:3000/user/login',
+        url: 'http://localhost:3000/signup',
         data: {
           username: this.username
         }
       })
         .then(result => {
-          localStorage.setItem('room', this.room)
-          localStorage.setItem('username', this.username)
+          console.log(result)
+          localStorage.setItem('room', result.data.room)
+          localStorage.setItem('username', result.data.username)
+          this.$router.push('main')
         })
         .catch(err => {
           console.log(err)
-        //   Vue.toasted.global.my_app_error({
-        //     message: 'Username/Password not Found'
-        //   })
         })
     }
   },
