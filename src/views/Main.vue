@@ -16,7 +16,7 @@
 
     <header>
       <p class="message">Tic Tac Toe</p>
-      <button class="play-btn">play</button>
+      <button class="play-btn" @click.prevent="play">play</button>
     </header>
 
     <main class="board" v-if="!winner">
@@ -126,6 +126,9 @@ export default {
       var socket = io.connect('https://salty-basin-75531.herokuapp.com')
       socket.emit('send-message', messageData)
       this.message = ''
+    },
+    play () {
+      localStorage.clear()
     },
     choose (pick) {
       console.log(pick)
