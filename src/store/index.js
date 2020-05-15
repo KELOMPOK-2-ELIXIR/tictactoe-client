@@ -15,7 +15,8 @@ export default new Vuex.Store({
     position7: '',
     position8: '',
     position9: '',
-    userrun: 0
+    userrun: 0,
+    winner: ''
 
   },
   mutations: {
@@ -53,74 +54,110 @@ export default new Vuex.Store({
   actions: {
     fetchposition (context, payload) {
       Axios({
-        method: 'GET',
+        method: 'POST',
         url: 'http://localhost:3000/data',
-        headers: {
+        data: {
           room: localStorage.room
         }
       })
         .then(result => {
-          console.log(result)
-          console.log(result.data[0].row.length + result.data[1].row.length)
-          context.commit('SET_USER_RUN', result.data[0].row.length + result.data[1].row.length)
-          for (const i in result.data[0].row) {
-            if (result.data[0].row[i] === 1) {
+          console.log(result.data)
+          const str1 = result.data.users[0].row
+          const res1 = str1.split(',')
+          const str2 = result.data.users[1].row
+          const res2 = str2.split(',')
+          console.log(res1.length + res2.length)
+          console.log(res1, res2)
+          context.commit('SET_USER_RUN', res1.length + res2.length)
+          for (const i in res1) {
+            if (res1[i] === '1') {
               context.commit('SET_POSISI_1', 'A')
+              console.log('aaaaaaaa')
             }
-            if (result.data[0].row[i] === 2) {
+            if (res1[i] === '2') {
               context.commit('SET_POSISI_2', 'A')
             }
-            if (result.data[0].row[i] === 3) {
+            if (res1[i] === '3') {
               context.commit('SET_POSISI_3', 'A')
             }
-            if (result.data[0].row[i] === 4) {
+            if (res1[i] === '4') {
               context.commit('SET_POSISI_4', 'A')
             }
-            if (result.data[0].row[i] === 5) {
+            if (res1[i] === '5') {
               context.commit('SET_POSISI_5', 'A')
             }
-            if (result.data[0].row[i] === 6) {
+            if (res1[i] === '6') {
               context.commit('SET_POSISI_6', 'A')
             }
-            if (result.data[0].row[i] === 7) {
+            if (res1[i] === '7') {
               context.commit('SET_POSISI_7', 'A')
             }
-            if (result.data[0].row[i] === 8) {
+            if (res1[i] === '8') {
               context.commit('SET_POSISI_8', 'A')
             }
-            if (result.data[0].row[i] === 9) {
+            if (res1[i] === '9') {
               context.commit('SET_POSISI_9', 'A')
             }
           }
 
-          for (const k in result.data[1].row) {
-            if (result.data[1].row[k] === 1) {
+          for (const k in res2) {
+            if (res2[k] === '1') {
               context.commit('SET_POSISI_1', 'B')
             }
-            if (result.data[1].row[k] === 2) {
+            if (res2[k] === '2') {
               context.commit('SET_POSISI_2', 'B')
             }
-            if (result.data[1].row[k] === 3) {
+            if (res2[k] === '3') {
               context.commit('SET_POSISI_3', 'B')
             }
-            if (result.data[1].row[k] === 4) {
+            if (res2[k] === '4') {
               context.commit('SET_POSISI_4', 'B')
             }
-            if (result.data[1].row[k] === 5) {
+            if (res2[k] === '5') {
               context.commit('SET_POSISI_5', 'B')
             }
-            if (result.data[1].row[k] === 6) {
+            if (res2[k] === '6') {
               context.commit('SET_POSISI_6', 'B')
             }
-            if (result.data[1].row[k] === 7) {
+            if (res2[k] === '7') {
               context.commit('SET_POSISI_7', 'B')
             }
-            if (result.data[1].row[k] === 8) {
+            if (res2[k] === '8') {
               context.commit('SET_POSISI_8', 'B')
             }
-            if (result.data[1].row[k] === 9) {
+            if (res2[k] === '9') {
               context.commit('SET_POSISI_9', 'B')
             }
+          }
+
+          const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+
+            [0, 4, 8],
+            [2, 4, 6]
+          ]
+
+          res1.sort()
+          console.log('sort', res1)
+
+          if (res1.length > 2) {
+            res1.slice(Math.max(res1.length - 2, 1))
+            console.log('sort 3 terakhir', res1)
+            for (let l = 0; l <= 7; l++) {
+              if (res1[0] === winningConditions[l][0] && res1[1] === winningConditions[l][1] && res1[2] === winningConditions[l][2]) {
+                console.log('winnerrrrrrrr')
+              }
+            }
+          }
+
+          if (res2.length > 2) {
+
           }
         })
     }

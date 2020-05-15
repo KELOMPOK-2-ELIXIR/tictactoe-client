@@ -120,7 +120,7 @@ export default {
     sendMessage () {
       console.log('chat message submitted')
       const messageData = {
-        name: localStorage.name,
+        name: localStorage.username,
         message: this.message
       }
       var socket = io.connect('http://localhost:3000')
@@ -128,8 +128,9 @@ export default {
       this.message = ''
     },
     choose (pick) {
+      console.log(pick)
       axios({
-        method: 'POST',
+        method: 'PUT',
         url: 'http://localhost:3000/data',
         headers: {
           room: localStorage.room,
@@ -141,6 +142,11 @@ export default {
       })
         .then(result => {
           this.fetchposition()
+          var socket = io.connect('http://localhost:3000')
+          socket.emit('refresh')
+        })
+        .catch(err => {
+          console.log(err)
         })
     }
   },
@@ -156,6 +162,10 @@ export default {
     io.connect('http://localhost:3000').on('send-message', (data) => {
       console.log('kumpulan chat message diterima')
       this.chatMessages = data
+    })
+
+    io.connect('http://localhost:3000').on('refresh_client', () => {
+      this.fetchposition()
     })
 
     if (localStorage.username) {
