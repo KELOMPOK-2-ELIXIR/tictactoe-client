@@ -1,24 +1,23 @@
 <template>
-<div>
-  <div class="wrap-login100">
-        <form class="login100-form validate-form">
-            <span class="login100-form-logo">
-                <i class="zmdi zmdi-landscape"></i>
-            </span>
-            <span class="login100-form-title p-b-34 p-t-27">
-                Enter to Play
-            </span>
-            <div class="wrap-input100 validate-input" data-validate = "Enter username">
-                <input class="input100" type="text" name="username" placeholder="Username" v-model="username">
-            </div>
-            <div class="container-login100-form-btn">
-                <button class="login100-form-btn" @click.prevent="login">
-                    Enter
-                </button>
-            </div>
-        </form>
+<div class="login-register d-flex align-items-center justify-content-center">
+    <div class="border border-primary p-5 rounded administration">
+      <h2 class="text-center">Welcome</h2>
+      <form @submit.prevent="login">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="username"
+            class="form-control"
+            id="username"
+            aria-describedby="emailHelp"
+            placeholder="Username"
+            v-model="username"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Start</button>
+      </form>
     </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -36,7 +35,7 @@ export default {
     login () {
       axios({
         method: 'POST',
-        url: 'http://localhost:3000/signup',
+        url: 'https://salty-basin-75531.herokuapp.com/signup',
         data: {
           username: this.username
         }
@@ -45,6 +44,7 @@ export default {
           console.log(result)
           localStorage.setItem('room', result.data.room)
           localStorage.setItem('username', result.data.username)
+          localStorage.setItem('userid', result.data.id)
           this.$router.push('main')
         })
         .catch(err => {
@@ -64,5 +64,7 @@ export default {
 </script>
 
 <style>
-
+  .login-register {
+    height: 100vh;
+  }
 </style>

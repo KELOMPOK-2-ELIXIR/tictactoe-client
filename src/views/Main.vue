@@ -19,7 +19,7 @@
       <button class="play-btn">play</button>
     </header>
 
-    <main class="board">
+    <main class="board" v-if="!winner">
 
       <div v-if ="position1 === 'A'" class="cell circle"></div>
       <div v-else-if="position1 === 'B'" class="cell cross"></div>
@@ -58,6 +58,8 @@
       <div v-else class="cell" @click="choose(9)"></div>
     </main>
 
+    <h1 v-else-if="winner">{{ winner }} Win!</h1>
+
     <footer class="scores hide">
 
       <div>
@@ -81,7 +83,6 @@
     </footer>
   </div>
   <div class="game-log-message-box">
-      <p>{{winner}}</p>
       <p>{{msg}}</p>
       <div id="separatorLine"></div>
       <div style="display:flex; flex-direction: column-reverse;">
@@ -104,7 +105,6 @@ export default {
   name: 'chatBox',
   data () {
     return {
-      winner: '',
       message: '',
       msg: '',
       chatMessages: [],
@@ -113,7 +113,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userrun', 'position1', 'position2', 'position3', 'position4', 'position5', 'position6', 'position7', 'position8', 'position9'])
+    ...mapState(['userrun', 'position1', 'position2', 'position3', 'position4', 'position5', 'position6', 'position7', 'position8', 'position9', 'winner'])
   },
   methods: {
     ...mapActions(['fetchposition']),
@@ -123,31 +123,53 @@ export default {
         name: localStorage.username,
         message: this.message
       }
-      var socket = io.connect('http://localhost:3000')
+      var socket = io.connect('https://salty-basin-75531.herokuapp.com')
       socket.emit('send-message', messageData)
       this.message = ''
     },
     choose (pick) {
       console.log(pick)
-      axios({
-        method: 'PUT',
-        url: 'http://localhost:3000/data',
-        headers: {
-          room: localStorage.room,
-          username: localStorage.username
-        },
-        data: {
-          chose: pick
-        }
-      })
-        .then(result => {
-          this.fetchposition()
-          var socket = io.connect('http://localhost:3000')
-          socket.emit('refresh')
+      if (this.userrun % 2 === 0 && localStorage.userid % 2 === 0) {
+        axios({
+          method: 'PUT',
+          url: 'https://salty-basin-75531.herokuapp.com/data',
+          headers: {
+            room: localStorage.room,
+            username: localStorage.username
+          },
+          data: {
+            chose: pick
+          }
         })
-        .catch(err => {
-          console.log(err)
+          .then(result => {
+            this.fetchposition()
+            var socket = io.connect('https://salty-basin-75531.herokuapp.com')
+            socket.emit('refresh')
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      } else if (this.userrun % 2 !== 0 && localStorage.userid % 2 !== 0) {
+        axios({
+          method: 'PUT',
+          url: 'https://salty-basin-75531.herokuapp.com/data',
+          headers: {
+            room: localStorage.room,
+            username: localStorage.username
+          },
+          data: {
+            chose: pick
+          }
         })
+          .then(result => {
+            this.fetchposition()
+            var socket = io.connect('https://salty-basin-75531.herokuapp.com')
+            socket.emit('refresh')
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     }
   },
   created () {
@@ -159,12 +181,12 @@ export default {
     }
     console.log('data dari main', this.position1, this.position2)
 
-    io.connect('http://localhost:3000').on('send-message', (data) => {
+    io.connect('https://salty-basin-75531.herokuapp.com').on('send-message', (data) => {
       console.log('kumpulan chat message diterima')
       this.chatMessages = data
     })
 
-    io.connect('http://localhost:3000').on('refresh_client', () => {
+    io.connect('https://salty-basin-75531.herokuapp.com').on('refresh_client', () => {
       this.fetchposition()
     })
 
