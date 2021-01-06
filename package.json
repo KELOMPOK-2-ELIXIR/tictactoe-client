@@ -9,7 +9,7 @@
     "lf": "vue-cli-service lint --fix"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap-vue": "^2.14.0",
     "core-js": "^3.6.4",
     "socket.io-client": "^2.3.0",
